@@ -123,6 +123,8 @@ elif choice == "Profile":
             st.success("✅ Profile updated!")
 
 # --- Logout ---
+
 elif choice == "Logout":
     st.session_state.user = None
     st.info("You have been logged out.")
+    
