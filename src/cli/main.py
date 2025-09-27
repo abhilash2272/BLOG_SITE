@@ -9,99 +9,108 @@ def main():
     comment_service = CommentService()
     like_service = LikeService()
 
-    print("Welcome to Blog Nest")
-    choice = input("1.Signup 2.Login: ")
+    print("Welcome to Blog Nest CLI")
+    choice = input("1. Signup  2. Login: ").strip()
 
     current_user = None
     if choice == "1":
-        name = input("Name: ")
-        email = input("Email: ")
-        password = input("Password: ")
+        name = input("Full Name: ").strip()
+        email = input("Email: ").strip()
+        password = input("Password: ").strip()
         user_service.signup(name, email, password)
-        print("User created!")
+        print("✅ User created! Please login to continue.")
         return
     elif choice == "2":
-        email = input("Email: ")
-        password = input("Password: ")
+        email = input("Email: ").strip()
+        password = input("Password: ").strip()
         user = user_service.login(email, password)
         if not user:
-            print("Invalid credentials")
+            print("❌ Invalid credentials")
             return
         current_user = user
-        print("Login successful!")
+        print(f"✅ Login successful! Welcome {user['name']}")
 
     while True:
         print("""
 Menu:
-1.Create Blog 2.List Blogs 3.Search Blogs 4.Delete Blog
-5.Add Comment 6.View Comments 7.Like Blog 8.Count Likes 9.Update Profile 10.Exit
+1. Create Blog
+2. List Blogs
+3. Search Blogs
+4. Delete Blog
+5. Add Comment
+6. View Comments
+7. Like Blog
+8. Count Likes
+9. Update Profile
+10. Exit
         """)
-        option = input("Choose: ")
+        option = input("Choose an option: ").strip()
 
         if option == "1":
-            title = input("Title: ")
-            content = input("Content: ")
-            category = input("Category: ")
+            title = input("Blog Title: ").strip()
+            content = input("Content: ").strip()
+            category = input("Category: ").strip()
             blog_service.create_blog(current_user["id"], title, content, category)
-            print("Blog created!")
+            print("✅ Blog created!")
 
         elif option == "2":
             blogs = blog_service.list_blogs()
             if not blogs:
-                print("No blogs found.")
+                print("ℹ️ No blogs found.")
             else:
                 for b in blogs:
-                    print(f"{b['id']}. {b['title']} - {b['category']} (by {b['user_id']})")
+                    print(f"{b['id']}. {b['title']} - {b['category']} (by User {b['user_id']})")
 
         elif option == "3":
-            keyword = input("Enter keyword to search: ")
+            keyword = input("Keyword to search: ").strip()
             blogs = blog_service.search_blogs(keyword)
             if not blogs:
-                print("No blogs matched your search.")
+                print("ℹ️ No matching blogs found.")
             else:
                 for b in blogs:
-                    print(f"{b['id']}. {b['title']} - {b['category']} (by {b['user_id']})")
+                    print(f"{b['id']}. {b['title']} - {b['category']} (by User {b['user_id']})")
 
         elif option == "4":
-            blog_id = int(input("Enter blog ID to delete: "))
+            blog_id = int(input("Blog ID to delete: ").strip())
             deleted = blog_service.delete_blog(blog_id)
-            if deleted:
-                print("Blog deleted!")
-            else:
-                print("Blog not found.")
+            print("✅ Blog deleted!" if deleted else "❌ Blog not found.")
 
         elif option == "5":
-            blog_id = int(input("Blog ID: "))
-            comment_text = input("Comment: ")
+            blog_id = int(input("Blog ID to comment on: ").strip())
+            comment_text = input("Comment: ").strip()
             comment_service.add_comment(blog_id, current_user["id"], comment_text)
-            print("Comment added!")
+            print("✅ Comment added!")
 
         elif option == "6":
-            blog_id = int(input("Blog ID: "))
+            blog_id = int(input("Blog ID to view comments: ").strip())
             comments = comment_service.get_comments(blog_id)
             if not comments:
-                print("No comments found for this blog.")
+                print("ℹ️ No comments for this blog.")
             else:
                 for c in comments:
-                    print(f"{c['id']}: {c['comment']} (by {c['user_id']})")
+                    print(f"{c['id']}: {c['comment']} (by User {c['user_id']})")
 
         elif option == "7":
-            blog_id = int(input("Blog ID: "))
+            blog_id = int(input("Blog ID to like: ").strip())
             like_service.like_blog(blog_id, current_user["id"])
-            print("Liked!")
+            print("👍 Blog liked!")
 
         elif option == "8":
-            blog_id = int(input("Blog ID: "))
-            print("Total Likes:", like_service.count_likes(blog_id))
+            blog_id = int(input("Blog ID to count likes: ").strip())
+            print(f"Total Likes: {like_service.count_likes(blog_id)}")
 
         elif option == "9":
-            name = input("New Name (leave blank to skip): ")
-            password = input("New Password (leave blank to skip): ")
-            user_service.update_profile(current_user["id"], name, password)
-            print("Profile updated!")
+            new_name = input("New Name (leave blank to skip): ").strip()
+            new_password = input("New Password (leave blank to skip): ").strip()
+            user_service.update_profile(current_user["id"], new_name or None, new_password or None)
+            print("✅ Profile updated!")
 
         elif option == "10":
+            print("👋 Exiting. Goodbye!")
             break
+
+        else:
+            print("⚠️ Invalid option. Please try again.")
 
 if __name__ == "__main__":
     main()
