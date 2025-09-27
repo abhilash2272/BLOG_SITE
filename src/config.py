@@ -1,11 +1,10 @@
-from supabase import create_client
-import os
 import streamlit as st
-#from dotenv import load_dotenv
+from supabase import create_client
 
-#load_dotenv()
-
-SUPABASE_URL = st.secrets["SUPABASE_URL"]
-SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
-
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+def get_supabase_client():
+    """Initialize Supabase client once and store in session state."""
+    if "supabase" not in st.session_state:
+        SUPABASE_URL = st.secrets["SUPABASE_URL"]
+        SUPABASE_KEY = st.secrets["SUPABASE_KEY"]
+        st.session_state.supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+    return st.session_state.supabase
