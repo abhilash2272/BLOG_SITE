@@ -16,7 +16,6 @@ st.sidebar.title("📖 BlogNest")
 menu = ["Signup", "Login", "Blogs", "Profile", "Logout"]
 choice = st.sidebar.radio("Navigation", menu)
 
-# --- Signup ---
 if choice == "Signup":
     st.header("📝 Signup")
     name = st.text_input("Full Name")
@@ -29,7 +28,6 @@ if choice == "Signup":
         except Exception as e:
             st.error(f"⚠️ {e}")
 
-# --- Login ---
 elif choice == "Login":
     st.header("🔑 Login")
     email = st.text_input("Email")
@@ -42,7 +40,6 @@ elif choice == "Login":
         else:
             st.error("Invalid credentials.")
 
-# --- Blogs ---
 elif choice == "Blogs":
     st.header("📚 Blogs")
     if not st.session_state.user:
@@ -59,10 +56,11 @@ elif choice == "Blogs":
                     st.success("🚀 Blog published!")
                 else:
                     st.error("⚠️ Title and content cannot be empty.")
+
         with tab2:
             blogs = blog_service.list_blogs()
             if not blogs:
-                st.info("No blogs available. Start writing your first one!")
+                st.info("No blogs available.")
             else:
                 for b in blogs:
                     st.markdown(f"### {b['title']} ({b['category']})")
@@ -82,7 +80,6 @@ elif choice == "Blogs":
                             comment_service.add_comment(b["id"], st.session_state.user["id"], new_comment)
                             st.experimental_rerun()
 
-# --- Profile ---
 elif choice == "Profile":
     if not st.session_state.user:
         st.warning("⚠️ Please login first.")
@@ -94,7 +91,6 @@ elif choice == "Profile":
             user_service.update_profile(st.session_state.user["id"], new_name, new_password)
             st.success("✅ Profile updated!")
 
-# --- Logout ---
 elif choice == "Logout":
     st.session_state.user = None
     st.info("You have been logged out.")
