@@ -1,3 +1,5 @@
+# Redeploy trigger - no functional change
+
 import streamlit as st
 from src.services.user_service import UserService
 from src.services.blog_service import BlogService
