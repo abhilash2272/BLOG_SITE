@@ -4,6 +4,7 @@ from src.services.blog_service import BlogService
 from src.services.comment_service import CommentService
 from src.services.like_service import LikeService
 
+
 user_service = UserService()
 blog_service = BlogService()
 comment_service = CommentService()
