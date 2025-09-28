@@ -1,7 +1,8 @@
-from supabase import create_client, Client
-import os
+from supabase import create_client
 
-SUPABASE_URL = os.getenv("SUPABASE_URL", "your-supabase-url")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "your-supabase-key")
+import streamlit as st
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+url = st.secrets["SUPABASE_URL"]
+key = st.secrets["SUPABASE_KEY"]
+
+supabase = create_client(url, key)
