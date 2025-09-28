@@ -1,8 +1,15 @@
-from src.config import supabase
+from src.dao.comment_dao import CommentDAO
 
-class CommentDAO:
-    def add_comment(self, comment_data):
-        return supabase.table("comments").insert(comment_data).execute()
+class CommentService:
+    def __init__(self):
+        self.dao = CommentDAO()
+
+    def add_comment(self, blog_id, user_id, comment):
+        return self.dao.add_comment({
+            "blog_id": blog_id,
+            "user_id": user_id,
+            "comment": comment
+        })
 
     def get_comments(self, blog_id):
-        return supabase.table("comments").select("*").eq("blog_id", blog_id).execute().data
+        return self.dao.get_comments(blog_id)

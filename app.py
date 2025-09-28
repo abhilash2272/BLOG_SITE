@@ -1,22 +1,17 @@
-# Redeploy trigger
-
 import streamlit as st
 from src.services.user_service import UserService
 from src.services.blog_service import BlogService
 from src.services.comment_service import CommentService
 from src.services.like_service import LikeService
 
-# Initialize services
 user_service = UserService()
 blog_service = BlogService()
 comment_service = CommentService()
 like_service = LikeService()
 
-# Initialize session state
 if "user" not in st.session_state:
     st.session_state.user = None
 
-# Sidebar Navigation
 st.sidebar.title("📖 BlogNest")
 menu = ["Signup", "Login", "Blogs", "Profile", "Logout"]
 choice = st.sidebar.radio("Navigation", menu)
@@ -29,7 +24,7 @@ if choice == "Signup":
     password = st.text_input("Password", type="password")
     if st.button("Create Account"):
         try:
-            user = user_service.signup(name, email, password)
+            user_service.signup(name, email, password)
             st.success("✅ Account created! Please login.")
         except Exception as e:
             st.error(f"⚠️ {e}")
@@ -54,8 +49,6 @@ elif choice == "Blogs":
         st.warning("⚠️ Please login first.")
     else:
         tab1, tab2 = st.tabs(["✍️ Write Blog", "📖 Read Blogs"])
-
-        # Write Blog
         with tab1:
             title = st.text_input("Title")
             content = st.text_area("Content")
@@ -66,8 +59,6 @@ elif choice == "Blogs":
                     st.success("🚀 Blog published!")
                 else:
                     st.error("⚠️ Title and content cannot be empty.")
-
-        # Read Blogs
         with tab2:
             blogs = blog_service.list_blogs()
             if not blogs:
@@ -77,8 +68,6 @@ elif choice == "Blogs":
                     st.markdown(f"### {b['title']} ({b['category']})")
                     st.markdown(f"By User {b['user_id']}")
                     st.write(b['content'])
-                    
-                    # Likes & Comments
                     col1, col2 = st.columns([1, 4])
                     with col1:
                         if st.button(f"👍 Like ({like_service.count_likes(b['id'])})", key=f"like{b['id']}"):
