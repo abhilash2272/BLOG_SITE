@@ -1,4 +1,4 @@
-# Redeploy trigger - safe
+# Redeploy trigger
 
 import streamlit as st
 from src.services.user_service import UserService
