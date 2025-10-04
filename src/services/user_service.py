@@ -1,4 +1,3 @@
-import bcrypt
 from src.dao.user_dao import UserDAO
 
 class UserService:
@@ -6,12 +5,11 @@ class UserService:
         self.dao = UserDAO()
 
     def signup(self, name, email, password):
-        hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-        return self.dao.create_user({"name": name, "email": email, "password": hashed})
+        return self.dao.create_user({"name": name, "email": email, "password": password})
 
     def login(self, email, password):
         user = self.dao.get_user_by_email(email)
-        if user and bcrypt.checkpw(password.encode(), user["password"].encode()):
+        if user and user["password"] == password:
             return user
         return None
 
@@ -20,5 +18,5 @@ class UserService:
         if name:
             data["name"] = name
         if password:
-            data["password"] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+            data["password"] = password
         return self.dao.update_user(user_id, data)

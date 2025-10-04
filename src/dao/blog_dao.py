@@ -1,8 +1,8 @@
 from src.config import supabase
 
 class BlogDAO:
-    def create_blog(self, blog_data):
-        return supabase.table("blogs").insert(blog_data).execute()
+    def create_blog(self, data):
+        return supabase.table("blogs").insert(data).execute()
 
     def list_blogs(self):
         res = supabase.table("blogs").select("*").execute()

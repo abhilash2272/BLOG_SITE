@@ -1,11 +1,8 @@
-from supabase import create_client, Client
+from supabase import create_client
 import os
 
-# Use environment variables
-SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+SUPABASE_URL="https://mlkmihkuzwzrhggrilwf.supabase.co"
+SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sa21paGt1end6cmhnZ3JpbHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxNzA2MDUsImV4cCI6MjA3Mzc0NjYwNX0.1PYIcOAynVBRZpCMxVTPehlJvHylMZlv3S0ZusLbeSI"
 
-if not SUPABASE_URL or not SUPABASE_KEY:
-    raise ValueError("❌ SUPABASE_URL and SUPABASE_KEY must be set as environment variables")
-
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Initialize Supabase client
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
