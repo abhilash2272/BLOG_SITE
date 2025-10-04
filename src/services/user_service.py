@@ -1,45 +1,17 @@
-import hashlib, hmac, os
+import bcrypt
 from src.dao.user_dao import UserDAO
 
 class UserService:
     def __init__(self):
         self.dao = UserDAO()
 
-    def _hash_password(self, password: str, salt: str = None):
-        if not salt:
-            salt = os.urandom(16).hex()
-        hashed = hashlib.pbkdf2_hmac(
-            "sha256",
-            password.encode(),
-            salt.encode(),
-            100000
-        ).hex()
-        return f"{salt}${hashed}"
-
-    def _verify_password(self, password: str, stored_hash: str):
-        try:
-            salt, hashed = stored_hash.split("$")
-            new_hash = hashlib.pbkdf2_hmac(
-                "sha256",
-                password.encode(),
-                salt.encode(),
-                100000
-            ).hex()
-            return hmac.compare_digest(hashed, new_hash)
-        except Exception:
-            return False
-
     def signup(self, name, email, password):
-        hashed = self._hash_password(password)
-        return self.dao.create_user({
-            "name": name,
-            "email": email,
-            "password": hashed
-        })
+        hashed = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+        return self.dao.create_user({"name": name, "email": email, "password": hashed})
 
     def login(self, email, password):
         user = self.dao.get_user_by_email(email)
-        if user and self._verify_password(password, user["password"]):
+        if user and bcrypt.checkpw(password.encode(), user["password"].encode()):
             return user
         return None
 
@@ -48,5 +20,5 @@ class UserService:
         if name:
             data["name"] = name
         if password:
-            data["password"] = self._hash_password(password)
+            data["password"] = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
         return self.dao.update_user(user_id, data)

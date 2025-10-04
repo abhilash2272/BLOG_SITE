@@ -1,11 +1,9 @@
-from src.dao.like_dao import LikeDAO
+from src.config import supabase
 
-class LikeService:
-    def __init__(self):
-        self.dao = LikeDAO()
-
-    def like_blog(self, blog_id, user_id):
-        return self.dao.add_like({"blog_id": blog_id, "user_id": user_id})
+class LikeDAO:
+    def add_like(self, like_data):
+        return supabase.table("likes").insert(like_data).execute()
 
     def count_likes(self, blog_id):
-        return self.dao.count_likes(blog_id)
+        res = supabase.table("likes").select("id").eq("blog_id", blog_id).execute()
+        return len(res.data) if res.data else 0
