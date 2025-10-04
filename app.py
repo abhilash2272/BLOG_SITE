@@ -1,8 +1,14 @@
 import streamlit as st
-from src.services.user_service import UserService
-from src.services.blog_service import BlogService
-from src.services.comment_service import CommentService
-from src.services.like_service import LikeService
+import sys
+import os
+
+# Add src folder to Python path
+sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
+
+from services.user_service import UserService
+from services.blog_service import BlogService
+from services.comment_service import CommentService
+from services.like_service import LikeService
 
 # Services
 user_service = UserService()
