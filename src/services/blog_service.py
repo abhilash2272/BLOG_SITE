@@ -13,12 +13,10 @@ class BlogService:
         })
 
     def list_blogs(self):
-        blogs = self.dao.list_blogs()
-        return blogs if blogs else []
+        return self.dao.list_blogs()
 
     def search_blogs(self, keyword):
-        blogs = self.dao.search_blogs(keyword)
-        return blogs if blogs else []
+        return self.dao.search_blogs(keyword)
 
     def delete_blog(self, blog_id):
         blog = self.dao.get_blog_by_id(blog_id)

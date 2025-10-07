@@ -1,23 +1,23 @@
-from src.dao.user_dao import UserDAO
+from src.config import supabase
 
 class UserService:
     def __init__(self):
-        self.dao = UserDAO()
+        pass
 
     def signup(self, name, email, password):
-        try:
-            return self.dao.create_user({"name": name, "email": email, "password": password})
-        except Exception as e:
-            err = str(e)
-            if "duplicate key value" in err or "already exists" in err:
-                return {"error": "Email already exists. Please login instead."}
-            return {"error": "Something went wrong during signup."}
+        # Avoid duplicate users
+        existing = supabase.table("user_profile").select("*").eq("email", email).execute()
+        if existing.data:
+            raise Exception(f"User with email {email} already exists")
+        return supabase.table("user_profile").insert({
+            "name": name,
+            "email": email,
+            "password": password
+        }).execute()
 
     def login(self, email, password):
-        user = self.dao.get_user_by_email(email)
-        if user and user["password"] == password:
-            return user
-        return None
+        res = supabase.table("user_profile").select("*").eq("email", email).eq("password", password).execute()
+        return res.data[0] if res.data else None
 
     def update_profile(self, user_id, name=None, password=None):
         data = {}
@@ -25,4 +25,4 @@ class UserService:
             data["name"] = name
         if password:
             data["password"] = password
-        return self.dao.update_user(user_id, data)
+        return supabase.table("user_profile").update(data).eq("id", user_id).execute()
