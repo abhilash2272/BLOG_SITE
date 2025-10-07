@@ -4,5 +4,4 @@ import os
 SUPABASE_URL="https://mlkmihkuzwzrhggrilwf.supabase.co"
 SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1sa21paGt1end6cmhnZ3JpbHdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgxNzA2MDUsImV4cCI6MjA3Mzc0NjYwNX0.1PYIcOAynVBRZpCMxVTPehlJvHylMZlv3S0ZusLbeSI"
 
-# Initialize Supabase client
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)

@@ -2,7 +2,6 @@ from src.config import supabase
 
 class LikeDAO:
     def like_blog(self, blog_id, user_id):
-        # Prevent duplicate likes
         existing = supabase.table("likes").select("*").eq("blog_id", blog_id).eq("user_id", user_id).execute()
         if existing.data:
             return {"error": {"message": "You have already liked this blog!"}}

@@ -4,17 +4,14 @@ from src.services.blog_service import BlogService
 from src.services.comment_service import CommentService
 from src.services.like_service import LikeService
 
-# Initialize services
 user_service = UserService()
 blog_service = BlogService()
 comment_service = CommentService()
 like_service = LikeService()
 
-# Session state
 if "user" not in st.session_state:
     st.session_state.user = None
 
-# --- Authentication ---
 if st.session_state.user is None:
     st.title("BlogNest - Login / Signup")
     auth_option = st.radio("Choose:", ["Login", "Signup"], horizontal=True)
@@ -37,7 +34,6 @@ if st.session_state.user is None:
             else:
                 st.error("❌ Invalid credentials")
 
-# --- Main Blog Features ---
 if st.session_state.user:
     st.sidebar.title(f"Welcome, {st.session_state.user['name']}!")
     menu = ["Create Blog", "List Blogs", "Search Blogs", "Delete Blog",

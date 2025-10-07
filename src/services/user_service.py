@@ -5,7 +5,6 @@ class UserService:
         pass
 
     def signup(self, name, email, password):
-        # Avoid duplicate users
         existing = supabase.table("user_profile").select("*").eq("email", email).execute()
         if existing.data:
             raise Exception(f"User with email {email} already exists")

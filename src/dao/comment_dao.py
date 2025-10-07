@@ -8,7 +8,6 @@ class CommentDAO:
         comments_res = supabase.table("comments").select("*").eq("blog_id", blog_id).execute()
         comments = comments_res.data if comments_res.data else []
         
-        # Attach username
         for c in comments:
             user_res = supabase.table("user_profile").select("name").eq("id", c["user_id"]).execute()
             c["username"] = user_res.data[0]["name"] if user_res.data else "Unknown"

@@ -27,6 +27,5 @@ class BlogService:
         self.dao.delete_blog(blog_id)
         return {"message": "✅ Blog deleted!"}
 
-    # ✅ Add this method
     def get_blog_by_id(self, blog_id):
         return self.dao.get_blog_by_id(blog_id)
