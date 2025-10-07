@@ -69,11 +69,18 @@ if st.session_state.user:
         if blogs:
             for b in blogs:
                 with st.container():
-                    st.markdown(f"**ID:** {b['id']}")
-                    st.markdown(f"### {b['title']}")
-                    st.markdown(f"{b['content']}")
-                    st.markdown(f"**Category:** {b['category']} | **Author ID:** {b['user_id']}")
-                    st.markdown("---")
+                    st.markdown(
+                        f"""
+                        <div style="padding: 15px; border-radius:10px; background-color:#f0f2f6; margin-bottom:15px;">
+                        <h4 style="margin:0;">{b['title']}</h4>
+                        <p style="margin:0; color:#555;">{b['content']}</p>
+                        <p style="margin:0; font-size:12px;">
+                        <span style='color:#0073e6;'>Category:</span> {b['category']} | 
+                        <span style='color:#0073e6;'>Author ID:</span> {b['user_id']} | 
+                        <span style='color:#0073e6;'>Blog ID:</span> {b['id']}
+                        </p>
+                        </div>
+                        """, unsafe_allow_html=True)
         else:
             st.info("No blogs found.")
 
@@ -86,11 +93,18 @@ if st.session_state.user:
             if results:
                 for b in results:
                     with st.container():
-                        st.markdown(f"**ID:** {b['id']}")
-                        st.markdown(f"### {b['title']}")
-                        st.markdown(f"{b['content']}")
-                        st.markdown(f"**Category:** {b['category']} | **Author ID:** {b['user_id']}")
-                        st.markdown("---")
+                        st.markdown(
+                            f"""
+                            <div style="padding: 15px; border-radius:10px; background-color:#f0f2f6; margin-bottom:15px;">
+                            <h4 style="margin:0;">{b['title']}</h4>
+                            <p style="margin:0; color:#555;">{b['content']}</p>
+                            <p style="margin:0; font-size:12px;">
+                            <span style='color:#0073e6;'>Category:</span> {b['category']} | 
+                            <span style='color:#0073e6;'>Author ID:</span> {b['user_id']} | 
+                            <span style='color:#0073e6;'>Blog ID:</span> {b['id']}
+                            </p>
+                            </div>
+                            """, unsafe_allow_html=True)
             else:
                 st.info("No blogs found with this keyword.")
 
@@ -116,8 +130,10 @@ if st.session_state.user:
             comments = comment_service.get_comments(blog_id)
             if comments:
                 for c in comments:
-                    st.markdown(f"**{c['user_id']}**: {c['comment']}")
-                    st.markdown("---")
+                    st.markdown(
+                        f"<p><b>User {c['user_id']}:</b> {c['comment']}</p>", 
+                        unsafe_allow_html=True)
+                    st.markdown("<hr>", unsafe_allow_html=True)
             else:
                 st.info("No comments yet.")
 
