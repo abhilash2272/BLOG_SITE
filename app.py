@@ -4,28 +4,33 @@ from src.services.blog_service import BlogService
 from src.services.comment_service import CommentService
 from src.services.like_service import LikeService
 
-# Services
+# Initialize services
 user_service = UserService()
 blog_service = BlogService()
 comment_service = CommentService()
 like_service = LikeService()
 
-# Session State
+# Session state for user
 if "user" not in st.session_state:
     st.session_state.user = None
 
+st.set_page_config(page_title="BlogNest", page_icon="📝", layout="wide")
+
 # --- Authentication ---
 if st.session_state.user is None:
-    st.title("Blog Nest - Login / Signup")
-    auth_option = st.radio("Choose:", ["Login", "Signup"])
+    st.title("📝 BlogNest - Login / Signup")
+    auth_option = st.radio("Choose:", ["Login", "Signup"], horizontal=True)
 
     if auth_option == "Signup":
         name = st.text_input("Name")
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
         if st.button("Signup"):
-            user_service.signup(name, email, password)
-            st.success("✅ User created! Login now.")
+            try:
+                user_service.signup(name, email, password)
+                st.success("✅ User created! Login now.")
+            except Exception as e:
+                st.error(f"❌ {str(e)}")
     else:
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
@@ -37,13 +42,14 @@ if st.session_state.user is None:
             else:
                 st.error("❌ Invalid credentials")
 
-# --- Main Blog Features ---
+# --- Main Blog Dashboard ---
 if st.session_state.user:
-    st.title(f"Welcome to Blog Nest, {st.session_state.user['name']}")
+    st.sidebar.title(f"Welcome, {st.session_state.user['name']}")
     menu = ["Create Blog", "List Blogs", "Search Blogs", "Delete Blog",
             "Add Comment", "View Comments", "Like Blog", "Count Likes",
             "Update Profile", "Logout"]
     choice = st.sidebar.selectbox("Menu", menu)
+
     user_id = st.session_state.user["id"]
 
     # --- Create Blog ---
@@ -56,38 +62,35 @@ if st.session_state.user:
             blog_service.create_blog(user_id, title, content, category)
             st.success("✅ Blog created!")
 
-    # --- List Blogs (Modern Cards) ---
+    # --- List Blogs ---
     elif choice == "List Blogs":
         st.subheader("All Blogs")
         blogs = blog_service.list_blogs()
         if blogs:
             for b in blogs:
-                st.markdown(f"""
-                <div style="border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:10px; background-color:#f9f9f9;">
-                    <h4 style="margin-bottom:5px;">ID: {b['id']} - {b['title']}</h4>
-                    <p style="margin:5px 0;"><b>Content:</b> {b['content']}</p>
-                    <p style="margin:5px 0;"><b>Category:</b> {b['category']}</p>
-                    <p style="margin:5px 0;"><b>User ID:</b> {b['user_id']}</p>
-                </div>
-                """, unsafe_allow_html=True)
+                with st.container():
+                    st.markdown(f"**ID:** {b['id']}")
+                    st.markdown(f"### {b['title']}")
+                    st.markdown(f"{b['content']}")
+                    st.markdown(f"**Category:** {b['category']} | **Author ID:** {b['user_id']}")
+                    st.markdown("---")
         else:
             st.info("No blogs found.")
 
     # --- Search Blogs ---
     elif choice == "Search Blogs":
-        keyword = st.text_input("Enter keyword to search")
+        st.subheader("Search Blogs")
+        keyword = st.text_input("Enter keyword")
         if st.button("Search"):
             results = blog_service.search_blogs(keyword)
             if results:
                 for b in results:
-                    st.markdown(f"""
-                    <div style="border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:10px; background-color:#f0f7ff;">
-                        <h4 style="margin-bottom:5px;">ID: {b['id']} - {b['title']}</h4>
-                        <p style="margin:5px 0;"><b>Content:</b> {b['content']}</p>
-                        <p style="margin:5px 0;"><b>Category:</b> {b['category']}</p>
-                        <p style="margin:5px 0;"><b>User ID:</b> {b['user_id']}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    with st.container():
+                        st.markdown(f"**ID:** {b['id']}")
+                        st.markdown(f"### {b['title']}")
+                        st.markdown(f"{b['content']}")
+                        st.markdown(f"**Category:** {b['category']} | **Author ID:** {b['user_id']}")
+                        st.markdown("---")
             else:
                 st.info("No blogs found with this keyword.")
 
@@ -113,7 +116,8 @@ if st.session_state.user:
             comments = comment_service.get_comments(blog_id)
             if comments:
                 for c in comments:
-                    st.markdown(f"<p><b>{c['id']}:</b> {c['comment']} (by {c['user_id']})</p>", unsafe_allow_html=True)
+                    st.markdown(f"**{c['user_id']}**: {c['comment']}")
+                    st.markdown("---")
             else:
                 st.info("No comments yet.")
 
