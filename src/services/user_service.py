@@ -5,7 +5,13 @@ class UserService:
         self.dao = UserDAO()
 
     def signup(self, name, email, password):
-        return self.dao.create_user({"name": name, "email": email, "password": password})
+        try:
+            return self.dao.create_user({"name": name, "email": email, "password": password})
+        except Exception as e:
+            err = str(e)
+            if "duplicate key value" in err or "already exists" in err:
+                return {"error": "Email already exists. Please login instead."}
+            return {"error": "Something went wrong during signup."}
 
     def login(self, email, password):
         user = self.dao.get_user_by_email(email)

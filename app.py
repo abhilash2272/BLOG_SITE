@@ -1,28 +1,19 @@
 import streamlit as st
-import sys
-import os
+from src.services.user_service import UserService
+from src.services.blog_service import BlogService
+from src.services.comment_service import CommentService
+from src.services.like_service import LikeService
 
-# Add src folder to Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
-
-from services.user_service import UserService
-from services.blog_service import BlogService
-from services.comment_service import CommentService
-from services.like_service import LikeService
-
-# Services
 user_service = UserService()
 blog_service = BlogService()
 comment_service = CommentService()
 like_service = LikeService()
 
-# Session State
 if "user" not in st.session_state:
     st.session_state.user = None
 
-# --- Authentication ---
 if st.session_state.user is None:
-    st.title("Blog Nest - Login / Signup")
+    st.title("📝 Blog Nest - Login / Signup")
     auth_option = st.radio("Choose:", ["Login", "Signup"])
 
     if auth_option == "Signup":
@@ -30,8 +21,12 @@ if st.session_state.user is None:
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
         if st.button("Signup"):
-            user_service.signup(name, email, password)
-            st.success("✅ User created! Login now.")
+            res = user_service.signup(name, email, password)
+            if res and "error" in res:
+                st.error(res["error"])
+            else:
+                st.success("✅ User created! Login now.")
+
     else:
         email = st.text_input("Email")
         password = st.text_input("Password", type="password")
@@ -43,19 +38,15 @@ if st.session_state.user is None:
             else:
                 st.error("❌ Invalid credentials")
 
-# --- Main Blog Features ---
 if st.session_state.user:
-    st.title(f"Welcome to Blog Nest, {st.session_state.user['name']}")
-
+    st.title(f"Welcome, {st.session_state.user['name']}!")
     menu = ["Create Blog", "List Blogs", "Search Blogs", "Delete Blog",
             "Add Comment", "View Comments", "Like Blog", "Count Likes",
             "Update Profile", "Logout"]
     choice = st.sidebar.selectbox("Menu", menu)
-
     user_id = st.session_state.user["id"]
 
     if choice == "Create Blog":
-        st.subheader("Create a New Blog")
         title = st.text_input("Title")
         content = st.text_area("Content")
         category = st.text_input("Category")
@@ -64,26 +55,25 @@ if st.session_state.user:
             st.success("✅ Blog created!")
 
     elif choice == "List Blogs":
-        st.subheader("All Blogs")
         blogs = blog_service.list_blogs()
         if blogs:
             for b in blogs:
-                st.write(f"**{b['title']}** - {b['category']} (by {b['user_id']})")
+                st.write(f"**{b['title']}** - {b['category']}")
         else:
             st.info("No blogs found.")
 
     elif choice == "Search Blogs":
-        keyword = st.text_input("Enter keyword to search")
+        keyword = st.text_input("Keyword")
         if st.button("Search"):
             results = blog_service.search_blogs(keyword)
             if results:
                 for b in results:
-                    st.write(f"**{b['title']}** - {b['category']} (by {b['user_id']})")
+                    st.write(f"**{b['title']}** - {b['category']}")
             else:
-                st.info("No blogs found with this keyword.")
+                st.info("No blogs found with that keyword.")
 
     elif choice == "Delete Blog":
-        blog_id = st.number_input("Enter blog ID to delete", min_value=1, step=1)
+        blog_id = st.number_input("Blog ID", min_value=1, step=1)
         if st.button("Delete"):
             res = blog_service.delete_blog(blog_id)
             st.success(res.get("message"))
@@ -101,9 +91,9 @@ if st.session_state.user:
             comments = comment_service.get_comments(blog_id)
             if comments:
                 for c in comments:
-                    st.write(f"{c['id']}: {c['comment']} (by {c['user_id']})")
+                    st.write(f"{c['comment']} (by {c['user_id']})")
             else:
-                st.info("No comments yet.")
+                st.info("No comments found.")
 
     elif choice == "Like Blog":
         blog_id = st.number_input("Blog ID", min_value=1, step=1)
@@ -122,8 +112,7 @@ if st.session_state.user:
         if st.button("Update"):
             user_service.update_profile(user_id, new_name, new_password)
             st.success("✅ Profile updated!")
-            st.session_state.user["name"] = new_name
 
     elif choice == "Logout":
         st.session_state.user = None
-        st.experimental_rerun()
+        st.rerun()
